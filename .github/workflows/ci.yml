@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,29 +24,27 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y build-essential
 
       - name: Compile Java files
-        shell: bash
         run: |
-          set -e
-          # find and compile Java files (skip .github folder)
-          files=$(find . -type f -name "*.java" -not -path './.github/*') || true
+          echo "Looking for Java files..."
+          files=$(find . -type f -name "*.java" -not -path "./.github/*")
           if [ -n "$files" ]; then
             echo "$files" | xargs javac
-            echo "Java compilation completed"
+            echo "✅ Java compilation completed"
           else
-            echo "No Java files to compile"
+            echo "ℹ️ No Java files to compile"
           fi
 
       - name: Compile C++ files
-        shell: bash
         run: |
-          set -e
-          files=$(find . -type f -name "*.cpp" -not -path './.github/*') || true
+          echo "Looking for C++ files..."
+          files=$(find . -type f -name "*.cpp" -not -path "./.github/*")
           if [ -n "$files" ]; then
+            mkdir -p build
             while IFS= read -r file; do
-              out="${file%.*}.out"
-              g++ "$file" -std=c++17 -O2 -o "$out"
+              base=$(basename "$file" .cpp)
+              g++ "$file" -std=c++17 -O2 -o "build/${base}.out"
             done <<< "$files"
-            echo "C++ compilation completed"
+            echo "✅ C++ compilation completed"
           else
-            echo "No C++ files to compile"
+            echo "ℹ️ No C++ files to compile"
           fi
