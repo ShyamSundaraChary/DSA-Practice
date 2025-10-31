@@ -21,30 +21,44 @@ jobs:
           java-version: "17"
 
       - name: Install build essentials
-        run: sudo apt-get update && sudo apt-get install -y build-essential
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
 
       - name: Compile Java files
+        shell: bash
         run: |
-          echo "Looking for Java files..."
-          files=$(find . -type f -name "*.java" -not -path "./.github/*")
-          if [ -n "$files" ]; then
-            echo "$files" | xargs javac
-            echo "✅ Java compilation completed"
+          echo "🔍 Looking for Java files..."
+          # Find all Java files except inside .github
+          if find . -type f -name "*.java" -not -path "./.github/*" | grep -q .; then
+            echo "Compiling Java files..."
+            # Use -print0 and -0 to handle spaces safely
+            find . -type f -name "*.java" -not -path "./.github/*" -print0 | xargs -0 javac
+            echo "✅ Java compilation completed successfully!"
           else
-            echo "ℹ️ No Java files to compile"
+            echo "ℹ️ No Java files found to compile."
           fi
 
       - name: Compile C++ files
+        shell: bash
         run: |
-          echo "Looking for C++ files..."
-          files=$(find . -type f -name "*.cpp" -not -path "./.github/*")
-          if [ -n "$files" ]; then
+          echo "🔍 Looking for C++ files..."
+          # Find all .cpp files except inside .github
+          if find . -type f -name "*.cpp" -not -path "./.github/*" | grep -q .; then
             mkdir -p build
-            while IFS= read -r file; do
+            echo "Compiling C++ files..."
+            # Handle file names safely
+            find . -type f -name "*.cpp" -not -path "./.github/*" -print0 | while IFS= read -r -d '' file; do
               base=$(basename "$file" .cpp)
               g++ "$file" -std=c++17 -O2 -o "build/${base}.out"
-            done <<< "$files"
-            echo "✅ C++ compilation completed"
+              echo "✔️ Built: build/${base}.out"
+            done
+            echo "✅ C++ compilation completed successfully!"
           else
-            echo "ℹ️ No C++ files to compile"
+            echo "ℹ️ No C++ files found to compile."
           fi
+
+      - name: List build outputs
+        run: |
+          echo "📦 Build output files:"
+          find build -type f || echo "No build output directory created."
