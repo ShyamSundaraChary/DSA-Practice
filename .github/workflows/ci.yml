@@ -1,0 +1,51 @@
+name: Build Java & C++
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Install build essentials
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+
+      - name: Compile Java files
+        shell: bash
+        run: |
+          set -e
+          # find and compile Java files (skip .github folder)
+          files=$(find . -type f -name "*.java" -not -path './.github/*') || true
+          if [ -n "$files" ]; then
+            echo "$files" | xargs javac
+            echo "Java compilation completed"
+          else
+            echo "No Java files to compile"
+          fi
+
+      - name: Compile C++ files
+        shell: bash
+        run: |
+          set -e
+          files=$(find . -type f -name "*.cpp" -not -path './.github/*') || true
+          if [ -n "$files" ]; then
+            while IFS= read -r file; do
+              out="${file%.*}.out"
+              g++ "$file" -std=c++17 -O2 -o "$out"
+            done <<< "$files"
+            echo "C++ compilation completed"
+          else
+            echo "No C++ files to compile"
+          fi
