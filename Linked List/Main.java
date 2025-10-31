@@ -23,10 +23,26 @@ public class Main
         newNode.next = head;
         return newNode;
     }
+
+    static Node reverseLL(Node head) {
+        Node prev = null;
+        Node cur = head;
+        Node front;
+
+        while(cur != null) {
+            front = cur.next;
+            
+            cur.next = prev;
+            
+            prev = cur;
+            cur = front;
+        }
+        return prev;
+    }
     
     static void PrintLL(Node head) {
         Node temp = head;
-        System.out.println("Linked List is : ");
+        System.out.print("Linked List is : ");
         while(temp != null) {
             System.out.print(temp.data);
             temp = temp.next;
@@ -34,14 +50,50 @@ public class Main
                 System.out.print(" -> ");
             }
         }
+        System.out.println();
     }
-    
+
+    static void findMiddle(Node head) {
+        Node slow = head;
+        Node fast = head;
+
+        while(fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        System.out.println("Middle element is : " + slow.data);
+    }
+    static void kthLast(int k, Node head) {
+        Node slow = head;
+        Node fast = head;
+
+        // move fast ptr by k times 
+        while(k > 0 && fast != null) {
+            k--;
+            fast = fast.next;
+        }
+        
+        while(fast != null) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        System.out.println("Kth Last is " + slow.data);
+    }
+
+
+
 	public static void main(String[] args) {
 		Node head = new Node(10);
 		addBack(20,head);
 		addBack(30,head);
 		addBack(40,head);
-        head = addFront(5,head);
-		PrintLL(head);
+        addBack(50,head);
+        PrintLL(head);
+        // head = addFront(5,head);
+		// PrintLL(head);
+        // head = reverseLL(head);
+        // PrintLL(head);
+        // findMiddle(head);
+        kthLast(2,head);
 	}
 }
