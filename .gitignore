@@ -10,14 +10,6 @@
 # Java class files
 *.class
 
-# Dynamic libraries
-*.dll
-*.so
-*.dylib
-
-# macOS metadata
-.DS_Store
-
 # Build directories
 /build/
 /bin/
