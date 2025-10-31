@@ -1,0 +1,28 @@
+# Ignore compiled binaries and common build artifacts
+# Executables
+*.exe
+*.out
+
+# Object and intermediate files
+*.o
+*.obj
+
+# Java class files
+*.class
+
+# Dynamic libraries
+*.dll
+*.so
+*.dylib
+
+# macOS metadata
+.DS_Store
+
+# Build directories
+/build/
+/bin/
+/out/
+
+# Ignore editor/OS files (optional)
+.vscode/
+node_modules/
